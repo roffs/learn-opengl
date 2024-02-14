@@ -154,6 +154,8 @@ int main()
                   << infoLog << std::endl;
     }
 
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
     glUseProgram(shaderProgram);
 
     // Link vertex attributes
