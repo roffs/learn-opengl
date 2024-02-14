@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -100,9 +101,10 @@ int main()
     const char *fragmentShaderSource = "#version 330 core\n"
                                        "out vec4 FragColor;\n"
                                        "in vec4 rgColors;\n"
+                                       "uniform float bColor;\n"
                                        "void main()\n"
                                        "{\n"
-                                       "    FragColor = vec4(rgColors.rg, 0.0, 0.0);\n"
+                                       "    FragColor = vec4(rgColors.rg, bColor, 0.0);\n"
                                        "}\0";
 
     unsigned int fragmentShader = createAndCompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
@@ -163,6 +165,10 @@ int main()
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
+        float timeValue = glfwGetTime();
+        float blueValue = (std::sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "bColor");
+
         // input
         processInput(window);
 
@@ -171,6 +177,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
+        glUniform1f(vertexColorLocation, blueValue);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
