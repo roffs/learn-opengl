@@ -87,9 +87,11 @@ int main()
     // Vertex shader
     const char *vertexShaderSource = "#version 330 core\n"
                                      "layout (location = 0) in vec3 aPos;\n"
+                                     "out vec2 rgColors;\n"
                                      "void main()\n"
                                      "{\n"
-                                     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                     "  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                     "  rgColors = vec2(aPos.x + 0.5, aPos.y + 0.5);\n"
                                      "}\0";
 
     unsigned int vertexShader = createAndCompileShader(vertexShaderSource, GL_VERTEX_SHADER);
@@ -97,9 +99,10 @@ int main()
     // Fragment shader
     const char *fragmentShaderSource = "#version 330 core\n"
                                        "out vec4 FragColor;\n"
+                                       "in vec4 rgColors;\n"
                                        "void main()\n"
                                        "{\n"
-                                       "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                       "    FragColor = vec4(rgColors.rg, 0.0, 0.0);\n"
                                        "}\0";
 
     unsigned int fragmentShader = createAndCompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
