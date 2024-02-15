@@ -23,6 +23,7 @@ public:
 
         // Load image and put data into texture
         int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
         unsigned char *data = stbi_load(texture_path, &width, &height, &nrChannels, 0);
 
         if (data)
