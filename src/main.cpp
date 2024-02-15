@@ -48,7 +48,7 @@ int main()
         return -1;
     }
 
-    Shader shader("D:\\Dev\\learn-opengl\\src\\shaders\\shader.vert", "D:\\Dev\\learn-opengl\\src\\shaders\\shader.frag");
+    Shader shader("src/shaders/shader.vert", "src/shaders/shader.frag");
 
     float vertices[] = {
         // positions         // colors
