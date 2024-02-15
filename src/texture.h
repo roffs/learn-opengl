@@ -7,7 +7,7 @@ class Texture
 {
 public:
     unsigned int ID;
-    Texture(const char texture_path[])
+    Texture(const char texture_path[], unsigned int format)
     {
 
         // Create texture
@@ -27,7 +27,7 @@ public:
 
         if (data)
         {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else

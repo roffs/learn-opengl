@@ -65,7 +65,8 @@ int main()
         1, 2, 3  // second triangle
     };
 
-    Texture texture("src/textures/wood.jpg");
+    Texture texture1("src/textures/wood.jpg", GL_RGB);
+    Texture texture2("src/textures/awesomeface.png", GL_RGBA);
 
     // Create Vertex attribute object, Vertex buffer object and Element buffer object
     unsigned int VAO, VBO, EBO;
@@ -94,11 +95,18 @@ int main()
 
     glBindVertexArray(0);
 
+    shader.use();
+    shader.setInt("texture1", 0);
+    shader.setInt("texture2", 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    texture1.bind();
+    glActiveTexture(GL_TEXTURE1);
+    texture2.bind();
+
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
-        float timeValue = glfwGetTime();
-        float blueValue = (std::sin(timeValue) / 2.0f) + 0.5f;
 
         // input
         processInput(window);
@@ -107,10 +115,11 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        texture.bind();
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, texture1.ID);
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, texture2.ID);
 
-        shader.use();
-        shader.setFloat("blueColor", blueValue);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
