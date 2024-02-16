@@ -104,13 +104,19 @@ int main()
     glActiveTexture(GL_TEXTURE1);
     texture2.bind();
 
-    // Transformation matrix
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(0.1f, 0.1f, 0.0f));
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    // Model view projection matrices
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    shader.setMatrix4x4("transform", glm::value_ptr(trans));
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+    shader.setMatrix4x4("model", glm::value_ptr(model));
+    shader.setMatrix4x4("view", glm::value_ptr(view));
+    shader.setMatrix4x4("projection", glm::value_ptr(projection));
 
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
