@@ -53,6 +53,8 @@ int main()
         return -1;
     }
 
+    glEnable(GL_DEPTH_TEST);
+
     Shader shader("src/shaders/shader.vert", "src/shaders/shader.frag");
 
     // clang-format off
@@ -170,7 +172,7 @@ int main()
 
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
