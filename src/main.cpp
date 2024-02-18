@@ -25,9 +25,9 @@ const unsigned int SCREEN_HEIGHT = 600;
 
 // Set view and projection matrices
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 float cameraSpeed = 2.0;
-Camera camera(cameraPos, cameraTarget, cameraSpeed);
+Camera camera(cameraPos, -90.0, 0.0, cameraSpeed);
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
