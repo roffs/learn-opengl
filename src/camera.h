@@ -24,17 +24,21 @@ public:
 
     float yaw;
     float pitch;
+    float fov;
+    float aspect;
 
     float translationSpeed;
     float rotationSpeed;
 
-    Camera(glm::vec3 position, float yaw, float pitch, float translationSpeed, float rotationSpeed)
+    Camera(glm::vec3 position, float yaw, float pitch, float fov, float aspect, float translationSpeed, float rotationSpeed)
     {
         this->position = position;
         this->translationSpeed = translationSpeed;
         this->rotationSpeed = rotationSpeed;
         this->yaw = yaw;
         this->pitch = pitch;
+        this->fov = fov;
+        this->aspect = aspect;
 
         updateLocalAxis();
     };
@@ -52,8 +56,22 @@ public:
         updateLocalAxis();
     }
 
+    void zoom(float offset)
+    {
+        fov -= (float)offset;
+        if (fov < 1.0f)
+            fov = 1.0f;
+        if (fov > 45.0f)
+            fov = 45.0f;
+    }
+
     glm::mat4x4 getView()
     {
         return glm::lookAt(position, position + forward, up);
+    }
+
+    glm::mat4x4 getProjection()
+    {
+        return glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
     }
 };

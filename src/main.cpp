@@ -15,6 +15,7 @@
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
 void processInput(GLFWwindow *window);
 
@@ -26,7 +27,7 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 float cameraSpeed = 2.0;
 float cameraRotationSpeed = 0.2;
-Camera camera(cameraPos, -90.0, 0.0, cameraSpeed, cameraRotationSpeed);
+Camera camera(cameraPos, -90.0, 0.0, 45.0, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, cameraSpeed, cameraRotationSpeed);
 
 float lastX = 0.0, lastY = 0.0;
 
@@ -54,8 +55,11 @@ int main()
 
     // Resize and cursor callbacks
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
     glfwSetCursorPos(window, lastX, lastY);
     glfwSetCursorPosCallback(window, mouse_callback);
+
+    glfwSetScrollCallback(window, scroll_callback);
 
     // Hide and capture cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -162,11 +166,6 @@ int main()
     glActiveTexture(GL_TEXTURE1);
     texture2.bind();
 
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-
-    shader.setMatrix4x4("projection", glm::value_ptr(projection));
-
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(2.0f, 5.0f, -15.0f),
@@ -198,6 +197,9 @@ int main()
         glm::mat4 view;
         view = camera.getView();
         shader.setMatrix4x4("view", glm::value_ptr(view));
+
+        glm::mat4 projection = camera.getProjection();
+        shader.setMatrix4x4("projection", glm::value_ptr(projection));
 
         for (unsigned int i = 0; i < 10; i++)
         {
@@ -238,6 +240,11 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     lastY = ypos;
 
     camera.rotate(xoffset, yoffset);
+}
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    camera.zoom((float)yoffset);
 }
 
 void processInput(GLFWwindow *window)
