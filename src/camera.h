@@ -43,6 +43,17 @@ public:
         updateLocalAxis();
     };
 
+    void move(glm::vec3 direction, float deltaTime)
+    {
+        glm::vec3 m_forward = glm::normalize(glm::vec3(forward.x, 0.0, forward.z));
+        glm::vec3 m_up = glm::vec3(0.0, 1.0, 0.0);
+        glm::vec3 m_right = glm::cross(m_forward, m_up);
+
+        position += m_forward * direction.x * translationSpeed * deltaTime;
+        position += m_right * direction.y * translationSpeed * deltaTime;
+        position += m_up * direction.z * translationSpeed * deltaTime;
+    }
+
     void rotate(float xoffset, float yoffset)
     {
         yaw += xoffset * rotationSpeed;

@@ -251,12 +251,26 @@ void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    float forwardMovement = 0.0;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.position += camera.translationSpeed * deltaTime * camera.forward;
+        forwardMovement += 1.0;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.position -= camera.translationSpeed * deltaTime * camera.forward;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.position -= camera.translationSpeed * deltaTime * camera.right;
+        forwardMovement -= 1.0;
+
+    float lateralMovement = 0.0;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.position += camera.translationSpeed * deltaTime * camera.right;
+        lateralMovement += 1.0;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        lateralMovement -= 1.0;
+
+    float verticalMovement = 0.0;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        verticalMovement += 1.0;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        verticalMovement -= 1.0;
+
+    glm::vec3 movementDirection = glm::vec3(forwardMovement, lateralMovement, verticalMovement);
+
+    camera.move(movementDirection, deltaTime);
 }
