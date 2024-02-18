@@ -11,20 +11,23 @@
 
 #include "shader.h"
 #include "texture.h"
+#include "camera.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
+void processInput(GLFWwindow *window);
 
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
+
+// Set view and projection matrices
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
+Camera camera(cameraPos, cameraTarget);
 
 int main()
 {
@@ -148,14 +151,6 @@ int main()
     glActiveTexture(GL_TEXTURE1);
     texture2.bind();
 
-    // Set view and projection matrices
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
@@ -186,11 +181,8 @@ int main()
 
         glBindVertexArray(VAO);
 
-        const float radius = 10.0f;
-        float camX = sin(glfwGetTime()) * radius;
-        float camZ = cos(glfwGetTime()) * radius;
         glm::mat4 view;
-        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), cameraTarget, up);
+        view = camera.getView();
         shader.setMatrix4x4("view", glm::value_ptr(view));
 
         for (unsigned int i = 0; i < 10; i++)
@@ -218,4 +210,19 @@ int main()
 
     glfwTerminate();
     return 0;
+}
+
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    const float cameraSpeed = 0.05f; // adjust accordingly
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.position += cameraSpeed * camera.forward;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.position -= cameraSpeed * camera.forward;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.position -= glm::normalize(glm::cross(camera.forward, camera.up)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.position += glm::normalize(glm::cross(camera.forward, camera.up)) * cameraSpeed;
 }
