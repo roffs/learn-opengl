@@ -4,18 +4,6 @@
 class Camera
 {
 private:
-    void updateLocalAxis()
-    {
-        forward = glm::vec3(
-            glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch)),
-            glm::sin(glm::radians(pitch)), sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch)));
-
-        up = glm::vec3(0.0f, 1.0f, 0.0f);
-        right = glm::normalize(glm::cross(forward, up));
-        up = glm::cross(right, forward);
-    }
-
-public:
     glm::vec3 position;
 
     glm::vec3 forward;
@@ -30,6 +18,18 @@ public:
     float translationSpeed;
     float rotationSpeed;
 
+    void updateLocalAxis()
+    {
+        forward = glm::vec3(
+            glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch)),
+            glm::sin(glm::radians(pitch)), sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch)));
+
+        up = glm::vec3(0.0f, 1.0f, 0.0f);
+        right = glm::normalize(glm::cross(forward, up));
+        up = glm::cross(right, forward);
+    }
+
+public:
     Camera(glm::vec3 position, float yaw, float pitch, float fov, float aspect, float translationSpeed, float rotationSpeed)
     {
         this->position = position;

@@ -270,7 +270,7 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         verticalMovement -= 1.0;
 
-    glm::vec3 movementDirection = glm::vec3(forwardMovement, lateralMovement, verticalMovement);
+    glm::vec3 movementDirection = glm::normalize(glm::vec3(forwardMovement, lateralMovement, verticalMovement));
 
     camera.move(movementDirection, deltaTime);
 }
