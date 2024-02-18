@@ -13,10 +13,8 @@
 #include "texture.h"
 #include "camera.h"
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 void processInput(GLFWwindow *window);
 
@@ -27,7 +25,10 @@ const unsigned int SCREEN_HEIGHT = 600;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 float cameraSpeed = 2.0;
-Camera camera(cameraPos, -90.0, 0.0, cameraSpeed);
+float cameraRotationSpeed = 0.2;
+Camera camera(cameraPos, -90.0, 0.0, cameraSpeed, cameraRotationSpeed);
+
+float lastX = 0.0, lastY = 0.0;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -50,7 +51,11 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+
+    // Resize and cursor callbacks
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPos(window, lastX, lastY);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // Hide and capture cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -221,16 +226,30 @@ int main()
     return 0;
 }
 
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.rotate(xoffset, yoffset);
+}
+
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.position += camera.speed * deltaTime * camera.forward;
+        camera.position += camera.translationSpeed * deltaTime * camera.forward;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.position -= camera.speed * deltaTime * camera.forward;
+        camera.position -= camera.translationSpeed * deltaTime * camera.forward;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.position -= camera.speed * deltaTime * camera.right;
+        camera.position -= camera.translationSpeed * deltaTime * camera.right;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.position += camera.speed * deltaTime * camera.right;
+        camera.position += camera.translationSpeed * deltaTime * camera.right;
 }
