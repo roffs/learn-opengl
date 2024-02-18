@@ -26,8 +26,8 @@ const unsigned int SCREEN_HEIGHT = 600;
 // Set view and projection matrices
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-
-Camera camera(cameraPos, cameraTarget);
+float cameraSpeed = 0.05;
+Camera camera(cameraPos, cameraTarget, cameraSpeed);
 
 int main()
 {
@@ -216,13 +216,12 @@ void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    const float cameraSpeed = 0.05f; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.position += cameraSpeed * camera.forward;
+        camera.moveForward();
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.position -= cameraSpeed * camera.forward;
+        camera.moveBackwards();
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.position -= glm::normalize(glm::cross(camera.forward, camera.up)) * cameraSpeed;
+        camera.moveLeft();
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.position += glm::normalize(glm::cross(camera.forward, camera.up)) * cameraSpeed;
+        camera.moveRight();
 }
