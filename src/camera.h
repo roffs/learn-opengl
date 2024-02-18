@@ -3,8 +3,7 @@
 
 class Camera
 {
-
-private:
+public:
     glm::vec3 position;
     glm::vec3 forward;
     glm::vec3 right;
@@ -12,7 +11,6 @@ private:
 
     float speed;
 
-public:
     Camera(glm::vec3 position, glm::vec3 target, float speed)
     {
         this->position = position;
@@ -27,22 +25,5 @@ public:
     glm::mat4x4 getView()
     {
         return glm::lookAt(position, position + forward, up);
-    }
-
-    void moveForward()
-    {
-        position += speed * forward;
-    }
-    void moveBackwards()
-    {
-        position -= speed * forward;
-    }
-    void moveRight()
-    {
-        position += speed * right;
-    }
-    void moveLeft()
-    {
-        position -= speed * right;
     }
 };

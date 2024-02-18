@@ -26,8 +26,11 @@ const unsigned int SCREEN_HEIGHT = 600;
 // Set view and projection matrices
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-float cameraSpeed = 0.05;
+float cameraSpeed = 2.0;
 Camera camera(cameraPos, cameraTarget, cameraSpeed);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main()
 {
@@ -171,6 +174,9 @@ int main()
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         // input
         processInput(window);
@@ -217,11 +223,11 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.moveForward();
+        camera.position += camera.speed * deltaTime * camera.forward;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.moveBackwards();
+        camera.position -= camera.speed * deltaTime * camera.forward;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.moveLeft();
+        camera.position -= camera.speed * deltaTime * camera.right;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.moveRight();
+        camera.position += camera.speed * deltaTime * camera.right;
 }
