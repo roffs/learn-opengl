@@ -73,7 +73,8 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("src/shaders/shader.vert", "src/shaders/shader.frag");
+    Shader cubeShader("src/shaders/shader.vert", "src/shaders/shader.frag");
+    Shader lightShader("src/shaders/light.vert", "src/shaders/light.frag");
 
     // clang-format off
     float vertices[] = {
@@ -157,14 +158,27 @@ int main()
 
     glBindVertexArray(0);
 
-    shader.use();
-    shader.setInt("texture1", 0);
-    shader.setInt("texture2", 1);
+    // Create light Vertex attribut object
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    // we only need to bind to the VBO, the container's VBO's data already contains the data.
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+    // texCoord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
-    glActiveTexture(GL_TEXTURE0);
-    texture1.bind();
-    glActiveTexture(GL_TEXTURE1);
-    texture2.bind();
+    glBindVertexArray(0);
+
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+    glm::mat4x4 light_model;
+    light_model = glm::mat4(1.0f);
+    light_model = glm::translate(light_model, lightPos);
+    light_model = glm::scale(light_model, glm::vec3(0.2f));
 
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -192,24 +206,42 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glm::mat4 view = camera.getView();
+        glm::mat4 projection = camera.getProjection();
+
+        // DRAW LIGHT
+        glBindVertexArray(lightVAO);
+        lightShader.use();
+        lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
+        lightShader.setMatrix4x4("view", glm::value_ptr(view));
+        lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
+
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+        // DRAW CUBES
         glBindVertexArray(VAO);
 
-        glm::mat4 view;
-        view = camera.getView();
-        shader.setMatrix4x4("view", glm::value_ptr(view));
+        cubeShader.use();
+        cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
-        glm::mat4 projection = camera.getProjection();
-        shader.setMatrix4x4("projection", glm::value_ptr(projection));
+        cubeShader.setMatrix4x4("view", glm::value_ptr(view));
+        cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));
+
+        glActiveTexture(GL_TEXTURE0);
+        texture1.bind();
+        glActiveTexture(GL_TEXTURE1);
+        texture2.bind();
 
         for (unsigned int i = 0; i < 10; i++)
         {
-            // Set projection matrix
+            // Set cube projection matrix
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-            shader.setMatrix4x4("model", glm::value_ptr(model));
+            cubeShader.setMatrix4x4("model", glm::value_ptr(model));
 
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
@@ -220,9 +252,11 @@ int main()
     }
 
     glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &lightVAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shader.ID);
+    glDeleteProgram(cubeShader.ID);
+    glDeleteProgram(lightShader.ID);
 
     glfwTerminate();
     return 0;
