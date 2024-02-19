@@ -242,6 +242,8 @@ int main()
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
             cubeShader.setMatrix4x4("model", glm::value_ptr(model));
+            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3x3(model)));
+            cubeShader.setMatrix3x3("normalMatrix", glm::value_ptr(normalMatrix));
 
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
