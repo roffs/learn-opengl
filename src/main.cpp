@@ -14,7 +14,7 @@
 #include "camera.h"
 #include "material/flatMaterial.h"
 #include "material/texturedMaterial.h"
-#include "light.h"
+#include "light/directionalLight.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -77,7 +77,6 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     Shader cubeShader("src/shaders/textured.vert", "src/shaders/textured.frag");
-    Shader lightShader("src/shaders/light.vert", "src/shaders/light.frag");
 
     // clang-format off
     float vertices[] = {
@@ -160,25 +159,6 @@ int main()
     glEnableVertexAttribArray(2);
     glBindVertexArray(0);
 
-    // Create light Vertex attribut object
-    unsigned int lightVAO;
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
-    // we only need to bind to the VBO, the container's VBO's data already contains the data.
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
-
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-    glm::mat4x4 light_model;
-    light_model = glm::mat4(1.0f);
-    light_model = glm::translate(light_model, lightPos);
-    light_model = glm::scale(light_model, glm::vec3(0.2f));
-
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(2.0f, 5.0f, -15.0f),
@@ -199,8 +179,8 @@ int main()
         32.0);
 
     // Light
-    Light light(
-        lightPos,
+    DirectionalLight directionalLight(
+        glm::vec3(-0.2f, -1.0f, -0.3f),
         glm::vec3(0.2f, 0.2f, 0.2f),
         glm::vec3(0.5f, 0.5f, 0.5f),
         glm::vec3(1.0f, 1.0f, 1.0));
@@ -222,22 +202,13 @@ int main()
         glm::mat4 view = camera.getView();
         glm::mat4 projection = camera.getProjection();
 
-        // DRAW LIGHT
-        glBindVertexArray(lightVAO);
-        lightShader.use();
-        lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
-        lightShader.setMatrix4x4("view", glm::value_ptr(view));
-        lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
-
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
         // DRAW CUBES
         glBindVertexArray(VAO);
 
         cubeShader.use();
         cubeShader.setVec3("cameraPos", camera.getPosition());
         cubeShader.setTexturedMaterial("material", material);
-        cubeShader.setLight("light", light);
+        cubeShader.setLight("light", directionalLight);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
         cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));
@@ -249,7 +220,7 @@ int main()
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
             cubeShader.setMatrix4x4("model", glm::value_ptr(model));
             glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3x3(model)));
             cubeShader.setMatrix3x3("normalMatrix", glm::value_ptr(normalMatrix));
@@ -263,11 +234,9 @@ int main()
     }
 
     glDeleteVertexArrays(1, &VAO);
-    glDeleteVertexArrays(1, &lightVAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glDeleteProgram(cubeShader.ID);
-    glDeleteProgram(lightShader.ID);
 
     glfwTerminate();
     return 0;

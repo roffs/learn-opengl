@@ -6,8 +6,8 @@ struct Material {
     float shininess;
 }; 
 
-struct Light {
-    vec3 position;
+struct DirectionalLight {
+    vec3 direction;
   
     vec3 ambient;
     vec3 diffuse;
@@ -23,18 +23,18 @@ out vec4 FragColor;
 
 uniform vec3 cameraPos;  
 uniform Material material;
-uniform Light light;  
+uniform DirectionalLight light;  
 
 void main()
 {
     vec3 diffuseColor = vec3(texture(material.diffuse, TexCoord));
+    vec3 lightDir = normalize(-light.direction);  
 
     // ambient light
     vec3 ambient = diffuseColor * light.ambient;
     
     // diffuse light
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);  
 
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = (diff * diffuseColor) * light.diffuse;
