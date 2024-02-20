@@ -75,7 +75,7 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader cubeShader("src/shaders/shader.vert", "src/shaders/shader.frag");
+    Shader cubeShader("src/shaders/flat.vert", "src/shaders/flat.frag");
     Shader lightShader("src/shaders/light.vert", "src/shaders/light.frag");
 
     // clang-format off
