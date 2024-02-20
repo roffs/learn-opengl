@@ -1,3 +1,6 @@
+#ifndef TEXTURE_H
+#define TEXTURE_H
+
 #include <glad/glad.h>
 #include <stb/stb_image.h>
 
@@ -47,3 +50,5 @@ public:
         glBindTexture(GL_TEXTURE_2D, ID);
     }
 };
+
+#endif

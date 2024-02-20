@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "material/flatMaterial.h"
+#include "material/texturedMaterial.h"
 #include "light.h"
 
 unsigned int createAndCompileShader(const char *source, GLenum shaderType);
@@ -96,6 +97,15 @@ public:
     {
         setVec3(name + ".ambient", material.ambient);
         setVec3(name + ".diffuse", material.diffuse);
+        setVec3(name + ".specular", material.specular);
+        setFloat(name + ".shininess", material.shininess);
+    }
+    void setTexturedMaterial(const std::string &name, TexturedMaterial &material)
+    {
+        setInt(name + ".diffuse", 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, material.diffuse.ID);
+
         setVec3(name + ".specular", material.specular);
         setFloat(name + ".shininess", material.shininess);
     }

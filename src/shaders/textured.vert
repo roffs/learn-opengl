@@ -5,7 +5,7 @@ layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 aNormal;
 
 out vec3 FragPos;  
-out vec3 TexCoord;
+out vec2 TexCoord;
 out vec3 Normal;
 
 uniform mat4 model;

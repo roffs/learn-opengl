@@ -1,8 +1,7 @@
 #version 330 core
 
 struct Material {
-    vec3 ambient;
-    vec3 diffuse;
+    sampler2D diffuse;
     vec3 specular;
     float shininess;
 }; 
@@ -17,7 +16,7 @@ struct Light {
 
 
 in vec3 FragPos;
-in vec3 TexCoord;
+in vec2 TexCoord;
 in vec3 Normal;
 
 out vec4 FragColor;
@@ -28,15 +27,17 @@ uniform Light light;
 
 void main()
 {
+    vec3 diffuseColor = vec3(texture(material.diffuse, TexCoord));
+
     // ambient light
-    vec3 ambient = material.ambient * light.ambient;
+    vec3 ambient = diffuseColor * light.ambient;
     
     // diffuse light
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);  
 
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = (diff * material.diffuse) * light.diffuse;
+    vec3 diffuse = (diff * diffuseColor) * light.diffuse;
 
     // specular light - Blinn–Phong reflection model   
     vec3 viewDir = normalize(cameraPos - FragPos);

@@ -13,6 +13,7 @@
 #include "texture.h"
 #include "camera.h"
 #include "material/flatMaterial.h"
+#include "material/texturedMaterial.h"
 #include "light.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -75,7 +76,7 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader cubeShader("src/shaders/flat.vert", "src/shaders/flat.frag");
+    Shader cubeShader("src/shaders/textured.vert", "src/shaders/textured.frag");
     Shader lightShader("src/shaders/light.vert", "src/shaders/light.frag");
 
     // clang-format off
@@ -132,9 +133,6 @@ int main()
         21, 22, 23
     };
     // clang-format on
-
-    Texture texture1("src/textures/wood.jpg", GL_RGB);
-    Texture texture2("src/textures/awesomeface.png", GL_RGBA);
 
     // Create Vertex attribute object, Vertex buffer object and Element buffer object
     unsigned int VAO, VBO, EBO;
@@ -193,14 +191,9 @@ int main()
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
 
-    cubeShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-    cubeShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-    cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-    cubeShader.setFloat("material.shininess", 32.0f);
-
-    FlatMaterial material(
-        glm::vec3(1.0f, 0.5f, 0.31f),
-        glm::vec3(1.0f, 0.5f, 0.31f),
+    Texture container("src/textures/container.png", GL_RGBA);
+    TexturedMaterial material(
+        container,
         glm::vec3(0.5f, 0.5f, 0.5f),
         32.0);
 
@@ -242,16 +235,11 @@ int main()
 
         cubeShader.use();
         cubeShader.setVec3("cameraPos", camera.getPosition());
-        cubeShader.setFlatMaterial("material", material);
+        cubeShader.setTexturedMaterial("material", material);
         cubeShader.setLight("light", light);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
         cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));
-
-        glActiveTexture(GL_TEXTURE0);
-        texture1.bind();
-        glActiveTexture(GL_TEXTURE1);
-        texture2.bind();
 
         for (unsigned int i = 0; i < 10; i++)
         {
