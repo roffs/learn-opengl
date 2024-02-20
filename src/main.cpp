@@ -174,12 +174,6 @@ int main()
 
     glBindVertexArray(0);
 
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-    glm::mat4x4 light_model;
-    light_model = glm::mat4(1.0f);
-    light_model = glm::translate(light_model, lightPos);
-    light_model = glm::scale(light_model, glm::vec3(0.2f));
-
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(2.0f, 5.0f, -15.0f),
@@ -199,20 +193,31 @@ int main()
         container_specular,
         32.0);
 
-    // PointLight pointLight(
-    //     lightPos,
-    //     glm::vec3(0.2f, 0.2f, 0.2f),
-    //     glm::vec3(0.5f, 0.5f, 0.5f),
-    //     glm::vec3(1.0f, 1.0f, 1.0f),
-    //     1.0f,
-    //     0.09f,
-    //     0.032f);
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f, 0.2f, 2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f, 2.0f, -12.0f),
+        glm::vec3(0.0f, 0.0f, -3.0f)};
 
-    // DirectionalLight directionalLight(
-    //     glm::vec3(-0.2f, -1.0f, -0.3f),
-    //     glm::vec3(0.2f, 0.2f, 0.2f),
-    //     glm::vec3(0.5f, 0.5f, 0.5f),
-    //     glm::vec3(1.0f, 1.0f, 1.0));
+    PointLight pointLights[4];
+
+    for (int i = 0; i < 4; i++)
+    {
+        pointLights[i] = PointLight(
+            pointLightPositions[i],
+            glm::vec3(0.05f, 0.05f, 0.05f),
+            glm::vec3(0.8f, 0.8f, 0.8f),
+            glm::vec3(1.0f, 1.0f, 1.0f),
+            1.0f,
+            0.09f,
+            0.032f);
+    }
+
+    DirectionalLight directionalLight(
+        glm::vec3(-0.2f, -1.0f, -0.3f),
+        glm::vec3(0.05f, 0.05f, 0.05f),
+        glm::vec3(0.4f, 0.4f, 0.4f),
+        glm::vec3(0.5f, 0.5f, 0.5f));
 
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
@@ -224,8 +229,8 @@ int main()
             camera.getForward(),
             12.5f,
             17.5f,
-            glm::vec3(0.1f, 0.1f, 0.1f),
-            glm::vec3(0.8f, 0.8f, 0.8f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(1.0f, 1.0f, 1.0f),
             glm::vec3(1.0f, 1.0f, 1.0f),
             1.0f,
             0.09f,
@@ -239,20 +244,27 @@ int main()
         processInput(window);
 
         // rendering commands
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 view = camera.getView();
         glm::mat4 projection = camera.getProjection();
 
         // DRAW LIGHT
-        // glBindVertexArray(lightVAO);
-        // lightShader.use();
-        // lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
-        // lightShader.setMatrix4x4("view", glm::value_ptr(view));
-        // lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
+        glBindVertexArray(lightVAO);
+        lightShader.use();
+        lightShader.setMatrix4x4("view", glm::value_ptr(view));
+        lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
 
-        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        for (int i = 0; i < 4; i++)
+        {
+            glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+            glm::mat4x4 light_model = glm::mat4(1.0f);
+            light_model = glm::translate(light_model, pointLightPositions[i]);
+            light_model = glm::scale(light_model, glm::vec3(0.2f));
+            lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
 
         // DRAW CUBES
         glBindVertexArray(VAO);
@@ -260,7 +272,13 @@ int main()
         cubeShader.use();
         cubeShader.setVec3("cameraPos", camera.getPosition());
         cubeShader.setTexturedMaterial("material", material);
-        cubeShader.setSpotLight("light", spotLight);
+        cubeShader.setDirectionalLight("directionalLight", directionalLight);
+        for (int i = 0; i < 4; i++)
+        {
+            std::string name = "pointLights[" + std::to_string(i) + "]";
+            cubeShader.setPointLight(name, pointLights[i]);
+        }
+        cubeShader.setSpotLight("spotLight", spotLight);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
         cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));

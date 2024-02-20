@@ -13,7 +13,7 @@ struct PointLight
     float constant;
     float linear;
     float quadratic;
-
+    PointLight() {}
     PointLight(glm::vec3 position,
                glm::vec3 ambient,
                glm::vec3 diffuse,
