@@ -76,6 +76,11 @@ public:
             fov = 45.0f;
     }
 
+    glm::vec3 getPosition()
+    {
+        return position;
+    }
+
     glm::mat4x4 getView()
     {
         return glm::lookAt(position, position + forward, up);

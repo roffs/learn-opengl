@@ -224,6 +224,8 @@ int main()
         cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
         cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         cubeShader.setVec3("lightPos", lightPos);
+        cubeShader.setVec3("cameraPos", camera.getPosition());
+        cubeShader.setFloat("shininessFactor", 32.0);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
         cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));
@@ -240,7 +242,7 @@ int main()
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+            // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
             cubeShader.setMatrix4x4("model", glm::value_ptr(model));
             glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3x3(model)));
             cubeShader.setMatrix3x3("normalMatrix", glm::value_ptr(normalMatrix));
