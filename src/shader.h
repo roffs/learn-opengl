@@ -11,6 +11,7 @@
 #include "material/flatMaterial.h"
 #include "material/texturedMaterial.h"
 #include "light/directionalLight.h"
+#include "light/pointLight.h"
 
 unsigned int createAndCompileShader(const char *source, GLenum shaderType);
 unsigned int createAndCompileProgram(unsigned int vertexShader, unsigned int fragmentShader);
@@ -112,12 +113,22 @@ public:
 
         setFloat(name + ".shininess", material.shininess);
     }
-    void setLight(const std::string &name, DirectionalLight &light)
+    void setDirectionalLight(const std::string &name, DirectionalLight &light)
     {
         setVec3(name + ".direction", light.direction);
         setVec3(name + ".ambient", light.ambient);
         setVec3(name + ".diffuse", light.diffuse);
         setVec3(name + ".specular", light.specular);
+    }
+    void setPointLight(const std::string &name, PointLight &light)
+    {
+        setVec3(name + ".position", light.position);
+        setVec3(name + ".ambient", light.ambient);
+        setVec3(name + ".diffuse", light.diffuse);
+        setVec3(name + ".specular", light.specular);
+        setFloat(name + ".constant", light.constant);
+        setFloat(name + ".linear", light.linear);
+        setFloat(name + ".quadratic", light.quadratic);
     }
 };
 

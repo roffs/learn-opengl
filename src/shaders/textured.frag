@@ -6,12 +6,24 @@ struct Material {
     float shininess;
 }; 
 
-struct DirectionalLight {
-    vec3 direction;
+// struct DirectionalLight {
+//     vec3 direction;
   
+//     vec3 ambient;
+//     vec3 diffuse;
+//     vec3 specular;
+// };
+
+struct PointLight {
+    vec3 position;
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 
@@ -23,12 +35,12 @@ out vec4 FragColor;
 
 uniform vec3 cameraPos;  
 uniform Material material;
-uniform DirectionalLight light;  
+uniform PointLight light;  
 
 void main()
 {
     vec3 diffuseColor = vec3(texture(material.diffuse, TexCoord));
-    vec3 lightDir = normalize(-light.direction);  
+    vec3 lightDir = normalize(light.position - FragPos);  
 
     // ambient light
     vec3 ambient = diffuseColor * light.ambient;
@@ -45,6 +57,15 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0), material.shininess);
 
     vec3 specular = (spec * vec3(texture(material.specular, TexCoord))) * light.specular ;
+
+    // attenuation
+    float distance = length(light.position - FragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + 
+    		    light.quadratic * (distance * distance));   
+
+    ambient  *= attenuation; 
+    diffuse  *= attenuation;
+    specular *= attenuation;   
 
     vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, 1.0);

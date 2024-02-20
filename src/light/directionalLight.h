@@ -1,5 +1,5 @@
-#ifndef LIGHT_H
-#define LIGHT_H
+#ifndef DIRECTIONAL_LIGHT_H
+#define DIRECTIONAL_LIGHT_H
 #include <glm/glm.hpp>
 
 struct DirectionalLight
