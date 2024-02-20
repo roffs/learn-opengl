@@ -106,7 +106,10 @@ public:
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, material.diffuse.ID);
 
-        setVec3(name + ".specular", material.specular);
+        setInt(name + ".specular", 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, material.specular.ID);
+
         setFloat(name + ".shininess", material.shininess);
     }
     void setLight(const std::string &name, Light &light)

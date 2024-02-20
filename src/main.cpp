@@ -191,10 +191,11 @@ int main()
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
 
-    Texture container("src/textures/container.png", GL_RGBA);
+    Texture container_diffuse("src/textures/container.png", GL_RGBA);
+    Texture container_specular("src/textures/container_specular.png", GL_RGBA);
     TexturedMaterial material(
-        container,
-        glm::vec3(0.5f, 0.5f, 0.5f),
+        container_diffuse,
+        container_specular,
         32.0);
 
     // Light

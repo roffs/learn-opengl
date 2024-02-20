@@ -7,11 +7,11 @@
 struct TexturedMaterial
 {
     Texture diffuse;
-    glm::vec3 specular;
+    Texture specular;
     float shininess;
 
     TexturedMaterial(Texture diffuse,
-                     glm::vec3 specular,
+                     Texture specular,
                      float shininess) : diffuse(diffuse), specular(specular), shininess(shininess) {}
 };
 
