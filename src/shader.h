@@ -135,7 +135,8 @@ public:
     {
         setVec3(name + ".position", light.position);
         setVec3(name + ".direction", light.direction);
-        setFloat(name + ".cutOffCosine", glm::cos(glm::radians(light.cutOffAngle)));
+        setFloat(name + ".innerCutOffCosine", glm::cos(glm::radians(light.innerCutOffAngle)));
+        setFloat(name + ".outerCutOffCosine", glm::cos(glm::radians(light.outerCutOffAngle)));
         setVec3(name + ".ambient", light.ambient);
         setVec3(name + ".diffuse", light.diffuse);
         setVec3(name + ".specular", light.specular);

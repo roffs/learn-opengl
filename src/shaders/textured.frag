@@ -29,7 +29,8 @@ struct Material {
 struct SpotLight {
     vec3 position;
     vec3 direction;
-    float cutOffCosine;
+    float innerCutOffCosine;
+    float outerCutOffCosine;
 
     vec3 ambient;
     vec3 diffuse;
@@ -54,41 +55,42 @@ void main()
 {
     vec3 lightDir = normalize(light.position - FragPos);     
 
-    // angle between current fragment and light direction
-    float theta = dot(lightDir, normalize(-light.direction));
+
     
-    if(theta > light.cutOffCosine) 
-    {       
-        vec3 diffuseColor = texture(material.diffuse, TexCoord).rgb;
+    vec3 diffuseColor = texture(material.diffuse, TexCoord).rgb;
 
-        // ambient light
-        vec3 ambient = diffuseColor * light.ambient;
-        
-        // diffuse light
-        vec3 norm = normalize(Normal);
+    // ambient light
+    vec3 ambient = diffuseColor * light.ambient;
+    
+    // diffuse light
+    vec3 norm = normalize(Normal);
 
-        float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = (diff * diffuseColor) * light.diffuse;
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = (diff * diffuseColor) * light.diffuse;
 
-        // specular light - Blinn–Phong reflection model   
-        vec3 viewDir = normalize(cameraPos - FragPos);
-        vec3 reflectDir = reflect(-lightDir, norm);  
-        float spec = pow(max(dot(viewDir, reflectDir), 0), material.shininess);
+    // specular light - Blinn–Phong reflection model   
+    vec3 viewDir = normalize(cameraPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0), material.shininess);
 
-        vec3 specular = (spec * vec3(texture(material.specular, TexCoord))) * light.specular ;
+    vec3 specular = (spec * vec3(texture(material.specular, TexCoord))) * light.specular ;
 
-        // attenuation
-        float distance = length(light.position - FragPos);
-        float attenuation = 1.0 / (light.constant + light.linear * distance + 
-    		    light.quadratic * (distance * distance));   
+    // spotlight (soft edges)
+    float theta = dot(lightDir, normalize(-light.direction));   // angle between current fragment and light direction
+    float epsilon = (light.innerCutOffCosine - light.outerCutOffCosine);
+    float intensity = clamp((theta - light.outerCutOffCosine) / epsilon, 0.0, 1.0);
+    diffuse  *= intensity;
+    specular *= intensity;
 
-        diffuse  *= attenuation;
-        specular *= attenuation;
+    // attenuation
+    float distance = length(light.position - FragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + 
+            light.quadratic * (distance * distance));   
 
-        FragColor = vec4(ambient + diffuse + specular, 1.0);
-    }
-    else  {
-        FragColor = vec4(light.ambient * vec3(texture(material.diffuse, TexCoord)), 1.0);
-    }
+    diffuse  *= attenuation;
+    specular *= attenuation;
+
+    FragColor = vec4(ambient + diffuse + specular, 1.0);
+  
 
 }

@@ -223,6 +223,7 @@ int main()
             camera.getPosition(),
             camera.getForward(),
             12.5f,
+            17.5f,
             glm::vec3(0.1f, 0.1f, 0.1f),
             glm::vec3(0.8f, 0.8f, 0.8f),
             glm::vec3(1.0f, 1.0f, 1.0f),

@@ -6,7 +6,8 @@ struct SpotLight
 {
     glm::vec3 position;
     glm::vec3 direction;
-    float cutOffAngle;
+    float innerCutOffAngle;
+    float outerCutOffAngle;
 
     glm::vec3 ambient;
     glm::vec3 diffuse;
@@ -19,7 +20,8 @@ struct SpotLight
     SpotLight(
         glm::vec3 position,
         glm::vec3 direction,
-        float cutOffAngle,
+        float innerCutOffAngle,
+        float outerCutOffAngle,
         glm::vec3 ambient,
         glm::vec3 diffuse,
         glm::vec3 specular,
@@ -27,7 +29,7 @@ struct SpotLight
         float linear,
         float quadratic) : direction(direction),
                            position(position),
-                           cutOffAngle(cutOffAngle),
+                           innerCutOffAngle(innerCutOffAngle), outerCutOffAngle(outerCutOffAngle),
                            ambient(ambient), diffuse(diffuse), specular(specular),
                            constant(constant), linear(linear), quadratic(quadratic)
     {
