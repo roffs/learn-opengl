@@ -20,7 +20,9 @@ struct PointLight
                glm::vec3 specular,
                float constant,
                float linear,
-               float quadratic) : position(position), ambient(ambient), diffuse(diffuse), specular(specular), constant(constant), linear(linear), quadratic(quadratic) {}
+               float quadratic) : position(position),
+                                  ambient(ambient), diffuse(diffuse), specular(specular),
+                                  constant(constant), linear(linear), quadratic(quadratic) {}
 };
 
 #endif

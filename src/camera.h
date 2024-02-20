@@ -81,6 +81,11 @@ public:
         return position;
     }
 
+    glm::vec3 getForward()
+    {
+        return forward;
+    }
+
     glm::mat4x4 getView()
     {
         return glm::lookAt(position, position + forward, up);

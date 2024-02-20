@@ -16,6 +16,7 @@
 #include "material/texturedMaterial.h"
 #include "light/directionalLight.h"
 #include "light/pointLight.h"
+#include "light/spotLight.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -28,7 +29,6 @@ const unsigned int SCREEN_HEIGHT = 600;
 
 // Set view and projection matrices
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 float cameraSpeed = 2.0;
 float cameraRotationSpeed = 0.2;
 Camera camera(cameraPos, -90.0, 0.0, 45.0, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, cameraSpeed, cameraRotationSpeed);
@@ -199,15 +199,14 @@ int main()
         container_specular,
         32.0);
 
-    // Light
-    PointLight pointLight(
-        lightPos,
-        glm::vec3(0.2f, 0.2f, 0.2f),
-        glm::vec3(0.5f, 0.5f, 0.5f),
-        glm::vec3(1.0f, 1.0f, 1.0f),
-        1.0f,
-        0.09f,
-        0.032f);
+    // PointLight pointLight(
+    //     lightPos,
+    //     glm::vec3(0.2f, 0.2f, 0.2f),
+    //     glm::vec3(0.5f, 0.5f, 0.5f),
+    //     glm::vec3(1.0f, 1.0f, 1.0f),
+    //     1.0f,
+    //     0.09f,
+    //     0.032f);
 
     // DirectionalLight directionalLight(
     //     glm::vec3(-0.2f, -1.0f, -0.3f),
@@ -218,6 +217,19 @@ int main()
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
+
+        // Light
+        SpotLight spotLight(
+            camera.getPosition(),
+            camera.getForward(),
+            12.5f,
+            glm::vec3(0.1f, 0.1f, 0.1f),
+            glm::vec3(0.8f, 0.8f, 0.8f),
+            glm::vec3(1.0f, 1.0f, 1.0f),
+            1.0f,
+            0.09f,
+            0.032f);
+
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -233,13 +245,13 @@ int main()
         glm::mat4 projection = camera.getProjection();
 
         // DRAW LIGHT
-        glBindVertexArray(lightVAO);
-        lightShader.use();
-        lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
-        lightShader.setMatrix4x4("view", glm::value_ptr(view));
-        lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
+        // glBindVertexArray(lightVAO);
+        // lightShader.use();
+        // lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
+        // lightShader.setMatrix4x4("view", glm::value_ptr(view));
+        // lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         // DRAW CUBES
         glBindVertexArray(VAO);
@@ -247,7 +259,7 @@ int main()
         cubeShader.use();
         cubeShader.setVec3("cameraPos", camera.getPosition());
         cubeShader.setTexturedMaterial("material", material);
-        cubeShader.setPointLight("light", pointLight);
+        cubeShader.setSpotLight("light", spotLight);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
         cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));

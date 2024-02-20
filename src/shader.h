@@ -12,6 +12,7 @@
 #include "material/texturedMaterial.h"
 #include "light/directionalLight.h"
 #include "light/pointLight.h"
+#include "light/spotLight.h"
 
 unsigned int createAndCompileShader(const char *source, GLenum shaderType);
 unsigned int createAndCompileProgram(unsigned int vertexShader, unsigned int fragmentShader);
@@ -123,6 +124,18 @@ public:
     void setPointLight(const std::string &name, PointLight &light)
     {
         setVec3(name + ".position", light.position);
+        setVec3(name + ".ambient", light.ambient);
+        setVec3(name + ".diffuse", light.diffuse);
+        setVec3(name + ".specular", light.specular);
+        setFloat(name + ".constant", light.constant);
+        setFloat(name + ".linear", light.linear);
+        setFloat(name + ".quadratic", light.quadratic);
+    }
+    void setSpotLight(const std::string &name, SpotLight &light)
+    {
+        setVec3(name + ".position", light.position);
+        setVec3(name + ".direction", light.direction);
+        setFloat(name + ".cutOffCosine", glm::cos(glm::radians(light.cutOffAngle)));
         setVec3(name + ".ambient", light.ambient);
         setVec3(name + ".diffuse", light.diffuse);
         setVec3(name + ".specular", light.specular);

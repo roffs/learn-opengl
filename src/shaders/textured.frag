@@ -14,8 +14,22 @@ struct Material {
 //     vec3 specular;
 // };
 
-struct PointLight {
+// struct PointLight {
+//     vec3 position;
+
+//     vec3 ambient;
+//     vec3 diffuse;
+//     vec3 specular;
+
+//     float constant;
+//     float linear;
+//     float quadratic;
+// };
+
+struct SpotLight {
     vec3 position;
+    vec3 direction;
+    float cutOffCosine;
 
     vec3 ambient;
     vec3 diffuse;
@@ -26,7 +40,6 @@ struct PointLight {
     float quadratic;
 };
 
-
 in vec3 FragPos;
 in vec2 TexCoord;
 in vec3 Normal;
@@ -35,38 +48,47 @@ out vec4 FragColor;
 
 uniform vec3 cameraPos;  
 uniform Material material;
-uniform PointLight light;  
+uniform SpotLight light;  
 
 void main()
 {
-    vec3 diffuseColor = vec3(texture(material.diffuse, TexCoord));
-    vec3 lightDir = normalize(light.position - FragPos);  
+    vec3 lightDir = normalize(light.position - FragPos);     
 
-    // ambient light
-    vec3 ambient = diffuseColor * light.ambient;
+    // angle between current fragment and light direction
+    float theta = dot(lightDir, normalize(-light.direction));
     
-    // diffuse light
-    vec3 norm = normalize(Normal);
+    if(theta > light.cutOffCosine) 
+    {       
+        vec3 diffuseColor = texture(material.diffuse, TexCoord).rgb;
 
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = (diff * diffuseColor) * light.diffuse;
+        // ambient light
+        vec3 ambient = diffuseColor * light.ambient;
+        
+        // diffuse light
+        vec3 norm = normalize(Normal);
 
-    // specular light - Blinn–Phong reflection model   
-    vec3 viewDir = normalize(cameraPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0), material.shininess);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = (diff * diffuseColor) * light.diffuse;
 
-    vec3 specular = (spec * vec3(texture(material.specular, TexCoord))) * light.specular ;
+        // specular light - Blinn–Phong reflection model   
+        vec3 viewDir = normalize(cameraPos - FragPos);
+        vec3 reflectDir = reflect(-lightDir, norm);  
+        float spec = pow(max(dot(viewDir, reflectDir), 0), material.shininess);
 
-    // attenuation
-    float distance = length(light.position - FragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + 
+        vec3 specular = (spec * vec3(texture(material.specular, TexCoord))) * light.specular ;
+
+        // attenuation
+        float distance = length(light.position - FragPos);
+        float attenuation = 1.0 / (light.constant + light.linear * distance + 
     		    light.quadratic * (distance * distance));   
 
-    ambient  *= attenuation; 
-    diffuse  *= attenuation;
-    specular *= attenuation;   
+        diffuse  *= attenuation;
+        specular *= attenuation;
 
-    vec3 result = ambient + diffuse + specular;
-    FragColor = vec4(result, 1.0);
+        FragColor = vec4(ambient + diffuse + specular, 1.0);
+    }
+    else  {
+        FragColor = vec4(light.ambient * vec3(texture(material.diffuse, TexCoord)), 1.0);
+    }
+
 }
