@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "material.h"
+
 unsigned int createAndCompileShader(const char *source, GLenum shaderType);
 unsigned int createAndCompileProgram(unsigned int vertexShader, unsigned int fragmentShader);
 
@@ -88,6 +90,13 @@ public:
     void setMatrix4x4(const std::string &name, float *value)
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value);
+    }
+    void setMaterial(const std::string &name, Material &material)
+    {
+        setVec3(name + ".ambient", material.ambient);
+        setVec3(name + ".diffuse", material.diffuse);
+        setVec3(name + ".specular", material.specular);
+        setFloat(name + ".shininess", material.shininess);
     }
 };
 
