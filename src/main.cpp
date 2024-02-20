@@ -13,6 +13,7 @@
 #include "texture.h"
 #include "camera.h"
 #include "material.h"
+#include "light.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -197,11 +198,18 @@ int main()
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
 
-    glm::vec3 ambient(1.0f, 0.5f, 0.31f);
-    glm::vec3 diffuse(1.0f, 0.5f, 0.31f);
-    glm::vec3 specular(0.5f, 0.5f, 0.5f);
-    float shininess = 32.0f;
-    Material material(ambient, diffuse, specular, shininess);
+    Material material(
+        glm::vec3(1.0f, 0.5f, 0.31f),
+        glm::vec3(1.0f, 0.5f, 0.31f),
+        glm::vec3(0.5f, 0.5f, 0.5f),
+        32.0);
+
+    // Light
+    Light light(
+        lightPos,
+        glm::vec3(0.2f, 0.2f, 0.2f),
+        glm::vec3(0.5f, 0.5f, 0.5f),
+        glm::vec3(1.0f, 1.0f, 1.0));
 
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
@@ -233,11 +241,9 @@ int main()
         glBindVertexArray(VAO);
 
         cubeShader.use();
-        cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        cubeShader.setVec3("lightPos", lightPos);
         cubeShader.setVec3("cameraPos", camera.getPosition());
         cubeShader.setMaterial("material", material);
+        cubeShader.setLight("light", light);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
         cubeShader.setMatrix4x4("projection", glm::value_ptr(projection));

@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "material.h"
+#include "light.h"
 
 unsigned int createAndCompileShader(const char *source, GLenum shaderType);
 unsigned int createAndCompileProgram(unsigned int vertexShader, unsigned int fragmentShader);
@@ -97,6 +98,13 @@ public:
         setVec3(name + ".diffuse", material.diffuse);
         setVec3(name + ".specular", material.specular);
         setFloat(name + ".shininess", material.shininess);
+    }
+    void setLight(const std::string &name, Light &light)
+    {
+        setVec3(name + ".position", light.position);
+        setVec3(name + ".ambient", light.ambient);
+        setVec3(name + ".diffuse", light.diffuse);
+        setVec3(name + ".specular", light.specular);
     }
 };
 
