@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "material.h"
+#include "material/flatMaterial.h"
 #include "light.h"
 
 unsigned int createAndCompileShader(const char *source, GLenum shaderType);
@@ -92,7 +92,7 @@ public:
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value);
     }
-    void setMaterial(const std::string &name, Material &material)
+    void setFlatMaterial(const std::string &name, FlatMaterial &material)
     {
         setVec3(name + ".ambient", material.ambient);
         setVec3(name + ".diffuse", material.diffuse);

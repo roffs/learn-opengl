@@ -12,7 +12,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "camera.h"
-#include "material.h"
+#include "material/flatMaterial.h"
 #include "light.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -198,7 +198,7 @@ int main()
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
 
-    Material material(
+    FlatMaterial material(
         glm::vec3(1.0f, 0.5f, 0.31f),
         glm::vec3(1.0f, 0.5f, 0.31f),
         glm::vec3(0.5f, 0.5f, 0.5f),
@@ -242,7 +242,7 @@ int main()
 
         cubeShader.use();
         cubeShader.setVec3("cameraPos", camera.getPosition());
-        cubeShader.setMaterial("material", material);
+        cubeShader.setFlatMaterial("material", material);
         cubeShader.setLight("light", light);
 
         cubeShader.setMatrix4x4("view", glm::value_ptr(view));
