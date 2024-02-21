@@ -1,7 +1,7 @@
 
 INCLUDE_DIRS = -Iinclude  # -I adds include directory of header files.
-LIB_DIRS = -Llib/GLFW  # -L looks in directory for library files
-LINK_LIBS = -lglfw3dll  # -l links with a library file.
+LIB_DIRS = -Llib/  # -L looks in directory for library files
+LINK_LIBS = -lglfw3dll -llibassimp # -l links with a library file.
 OUTPUT_FILE = target/program.exe
 
 run: 
