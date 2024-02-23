@@ -106,11 +106,11 @@ public:
     {
         setInt(name + ".diffuse", 0);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, material.diffuse.ID);
+        glBindTexture(GL_TEXTURE_2D, material.diffuse.id);
 
         setInt(name + ".specular", 1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, material.specular.ID);
+        glBindTexture(GL_TEXTURE_2D, material.specular.id);
 
         setFloat(name + ".shininess", material.shininess);
     }

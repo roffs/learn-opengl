@@ -9,46 +9,60 @@
 class Texture
 {
 public:
-    unsigned int ID;
-    Texture(const char texture_path[], unsigned int format)
+    unsigned int id;
+    std::string type;
+    std::string path;
+
+    Texture(unsigned int id, std::string type, std::string path) : id(id), type(type), path(path)
     {
+    }
 
-        // Create texture
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+    void bind()
+    {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+};
 
-        // Set the texture wrapping/filtering options on the currently bound texture object
+Texture loadTextureFromFile(const char *path, const std::string &directory, const std::string type)
+{
+    std::string filename = std::string(path);
+    filename = directory + '/' + filename;
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // Load image and put data into texture
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load(texture_path, &width, &height, &nrChannels, 0);
-
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-
-        // Free image memory
         stbi_image_free(data);
-
-        ID = texture;
     }
-
-    void bind()
+    else
     {
-        glBindTexture(GL_TEXTURE_2D, ID);
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
     }
-};
+
+    Texture texture(textureID, type, std::string(path));
+    return texture;
+}
 
 #endif
