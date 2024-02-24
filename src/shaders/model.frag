@@ -62,7 +62,7 @@ uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];  
 uniform SpotLight spotLight; 
 
-uniform float shininess = 0.2;
+uniform float shininess = 32;
 
 void main()
 {    
