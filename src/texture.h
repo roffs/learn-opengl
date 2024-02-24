@@ -23,17 +23,16 @@ public:
     }
 };
 
-Texture loadTextureFromFile(const char *path, const std::string &directory, const std::string type)
+Texture loadTextureFromFile(const char *fileName, const std::string &directory, const std::string type)
 {
-    std::string filename = std::string(path);
-    filename = directory + '/' + filename;
+    std::string filePath = directory + '/' + std::string(fileName);
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+    unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &nrComponents, 0);
     if (data)
     {
         GLenum format;
@@ -57,11 +56,10 @@ Texture loadTextureFromFile(const char *path, const std::string &directory, cons
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        std::cout << "Texture failed to load at path: " << fileName << std::endl;
         stbi_image_free(data);
     }
-
-    Texture texture(textureID, type, std::string(path));
+    Texture texture(textureID, type, filePath);
     return texture;
 }
 

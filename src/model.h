@@ -105,13 +105,14 @@ private:
         std::vector<Texture> textures;
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
-            aiString str;
-            mat->GetTexture(type, i, &str);
+            aiString fileName;
+            mat->GetTexture(type, i, &fileName);
 
             bool skip = false;
             for (unsigned int j = 0; j < textures_loaded.size(); j++)
             {
-                if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+                std::string filePath = directory + '/' + std::string(fileName.C_Str());
+                if (textures_loaded[j].path == filePath)
                 {
                     textures.push_back(textures_loaded[j]);
                     skip = true;
@@ -120,7 +121,7 @@ private:
             }
             if (!skip)
             {
-                Texture texture = loadTextureFromFile(str.C_Str(), directory, typeName);
+                Texture texture = loadTextureFromFile(fileName.C_Str(), directory, typeName);
                 textures.push_back(texture);
                 textures_loaded.push_back(texture);
             }
