@@ -35,6 +35,7 @@ public:
             else if (name == "texture_specular")
                 number = std::to_string(specularNr++);
 
+            // std::cout << "HERE: " << ("material." + name + number).c_str() << std::endl;
             shader.setInt(("material." + name + number).c_str(), i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }

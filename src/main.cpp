@@ -232,7 +232,18 @@ int main()
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
 
+        // DRAW MODEL
         shader.use();
+        shader.use();
+        shader.setVec3("cameraPos", camera.getPosition());
+        shader.setDirectionalLight("directionalLight", directionalLight);
+        for (int i = 0; i < 4; i++)
+        {
+            std::string name = "pointLights[" + std::to_string(i) + "]";
+            shader.setPointLight(name, pointLights[i]);
+        }
+        shader.setSpotLight("spotLight", spotLight);
+
         shader.setMatrix4x4("view", glm::value_ptr(view));
         shader.setMatrix4x4("projection", glm::value_ptr(projection));
 
@@ -240,6 +251,10 @@ int main()
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));     // it's a bit too big for our scene, so scale it down
         shader.setMatrix4x4("model", glm::value_ptr(model));
+
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3x3(model)));
+        shader.setMatrix3x3("normalMatrix", glm::value_ptr(normalMatrix));
+
         ourModel.Draw(shader);
 
         // check and call events and swap the buffers
