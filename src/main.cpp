@@ -78,6 +78,7 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     Shader shader("src/shaders/model.vert", "src/shaders/model.frag");
     Shader hightlightShader("src/shaders/flatColor.vert", "src/shaders/flatColor.frag");
@@ -153,7 +154,7 @@ int main()
             glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
             glm::mat4x4 light_model = glm::mat4(1.0f);
             light_model = glm::translate(light_model, pointLightPositions[i]);
-            light_model = glm::scale(light_model, glm::vec3(0.2f));
+            light_model = glm::scale(light_model, glm::vec3(1.0f));
             lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
             cube.Draw(lightShader);
         }
