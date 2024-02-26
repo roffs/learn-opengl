@@ -68,14 +68,14 @@ private:
 
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
-            Vertex vertex;
+
             // process vertex positions, normals and texture coordinates
-            vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-            vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            glm::vec3 vertex_position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+            glm::vec3 vertex_normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            glm::vec2 vertex_texCoords = (mesh->mTextureCoords[0]) ? glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y)
+                                                                   : glm::vec2(0.0f, 0.0f);
 
-            (mesh->mTextureCoords[0]) ? vertex.TexCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y)
-                                      : vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-
+            Vertex vertex(vertex_position, vertex_normal, vertex_texCoords);
             vertices.push_back(vertex);
         }
         // process indices

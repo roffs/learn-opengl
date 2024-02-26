@@ -83,81 +83,6 @@ int main()
     Shader hightlightShader("src/shaders/flatColor.vert", "src/shaders/flatColor.frag");
     Shader lightShader("src/shaders/light.vert", "src/shaders/light.frag");
 
-    // clang-format off
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-    };
-    
-
-    unsigned int indices[] = {
-        0, 1, 3, 
-        1, 2, 3,
-
-        4, 5, 7,
-        5, 6, 7,
-
-        8, 9, 11,
-        9, 10, 11,
-
-        12, 13, 15,
-        13, 14, 15,
-
-        16, 17, 19,
-        17, 18, 19,
-
-        20, 21, 23,
-        21, 22, 23
-    };
-    // clang-format on
-
-    // Create light Vertex attribut object
-    unsigned int lightVAO, VBO, EBO;
-    glGenVertexArrays(1, &lightVAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(lightVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
-
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f, 0.2f, 2.0f),
         glm::vec3(2.3f, -3.3f, -4.0f),
@@ -185,6 +110,7 @@ int main()
         glm::vec3(0.5f, 0.5f, 0.5f));
 
     Model ourModel("src/assets/backpack/backpack.obj");
+    Mesh cube = create_cube();
 
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
@@ -218,7 +144,6 @@ int main()
         glm::mat4 projection = camera.getProjection();
 
         // DRAW LIGHT
-        glBindVertexArray(lightVAO);
         lightShader.use();
         lightShader.setMatrix4x4("view", glm::value_ptr(view));
         lightShader.setMatrix4x4("projection", glm::value_ptr(projection));
@@ -230,7 +155,7 @@ int main()
             light_model = glm::translate(light_model, pointLightPositions[i]);
             light_model = glm::scale(light_model, glm::vec3(0.2f));
             lightShader.setMatrix4x4("model", glm::value_ptr(light_model));
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            cube.Draw(lightShader);
         }
 
         glEnable(GL_STENCIL_TEST);
@@ -281,9 +206,6 @@ int main()
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &lightVAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shader.ID);
     glDeleteProgram(lightShader.ID);
 
