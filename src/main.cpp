@@ -80,6 +80,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     Shader shader("src/shaders/model.vert", "src/shaders/model.frag");
+    Shader hightlightShader("src/shaders/flatColor.vert", "src/shaders/flatColor.frag");
     Shader lightShader("src/shaders/light.vert", "src/shaders/light.frag");
 
     // clang-format off
@@ -188,7 +189,6 @@ int main()
     // RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
-
         // Light
         SpotLight spotLight(
             camera.getPosition(),
@@ -210,8 +210,9 @@ int main()
         processInput(window);
 
         // rendering commands
+
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         glm::mat4 view = camera.getView();
         glm::mat4 projection = camera.getProjection();
@@ -232,8 +233,13 @@ int main()
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
 
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilMask(0xFF);
+
         // DRAW MODEL
-        shader.use();
         shader.use();
         shader.setVec3("cameraPos", camera.getPosition());
         shader.setDirectionalLight("directionalLight", directionalLight);
@@ -248,14 +254,27 @@ int main()
         shader.setMatrix4x4("projection", glm::value_ptr(projection));
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));     // it's a bit too big for our scene, so scale it down
         shader.setMatrix4x4("model", glm::value_ptr(model));
 
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3x3(model)));
         shader.setMatrix3x3("normalMatrix", glm::value_ptr(normalMatrix));
 
         ourModel.Draw(shader);
+
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilMask(0x00);
+        glDisable(GL_DEPTH_TEST);
+
+        hightlightShader.use();
+        // model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
+        hightlightShader.setMatrix4x4("view", glm::value_ptr(view));
+        hightlightShader.setMatrix4x4("projection", glm::value_ptr(projection));
+        hightlightShader.setMatrix4x4("model", glm::value_ptr(model));
+        ourModel.Draw(hightlightShader);
+
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glEnable(GL_DEPTH_TEST);
 
         // check and call events and swap the buffers
         glfwSwapBuffers(window);
